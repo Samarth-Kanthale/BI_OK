@@ -1,3 +1,5 @@
+//src/app/layout.tsx
+
 import type {Metadata} from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -6,7 +8,8 @@ import { Footer } from '@/components/layout/footer';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { initializeApp, getApps } from 'firebase/app';
-import Analytics from '@/components/layout/analytics';
+//import Analytics from '@/components/layout/analytics';
+import Script from 'next/script';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -103,6 +106,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZXRGN7DE9B"
+          strategy="beforeInteractive"
+        />
+        <Script id="google-analytics" strategy="beforeInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-ZXRGN7DE9B');
+          `}
+        </Script>
+
+      </head>
       <body className={cn(
         "h-full bg-background font-sans antialiased",
         inter.variable, 
@@ -116,7 +135,6 @@ export default function RootLayout({
           <Footer />
         </div>
          <Toaster />
-         <Analytics />
       </body>
     </html>
   );

@@ -2,85 +2,90 @@
 'use server';
 
 import { z } from 'zod';
-import { getFirestore, Firestore } from 'firebase-admin/firestore'; // Import Firestore module
+import {
+  getFirestore,
+  FieldValue,
+  Firestore,
+} from 'firebase-admin/firestore';
 import { initializeFirebaseAdminApp } from '@/lib/firebase-admin-init';
 import { headers } from 'next/headers';
 
-// Schema for contact form validation
+/*───────────────────────────────────────────────────────────────────────────*/
+/*  Schema includes all fields */
 const ContactFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
-  subject: z.string().min(1, "Subject is required"),
-  message: z.string().min(5, "Message must be at least 5 characters long"),
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  category: z.string().min(1, 'Category is required'),
+  subject: z.string().min(1, 'Subject is required'),
+  message: z.string().min(5, 'Message must be at least 5 characters long'),
 });
+
+export type ContactPayload = z.infer<typeof ContactFormSchema>;
 
 interface ContactActionResult {
   success: boolean;
   error?: string;
-  data?: z.infer<typeof ContactFormSchema>;
+  data?: ContactPayload;
 }
 
-const APP_NAME = "contactApp";
+const APP_NAME = 'contactApp';
 
-export async function submitContactFormAction(formData: FormData): Promise<ContactActionResult> {
-  const rawData = {
-    name: formData.get('name')?.toString() || '',
-    email: formData.get('email')?.toString() || '',
-    subject: formData.get('subject')?.toString() || '',
-    message: formData.get('message')?.toString() || '',
+/*───────────────────────────────────────────────────────────────────────────*/
+export async function submitContactFormAction(
+  formData: FormData
+): Promise<ContactActionResult> {
+  const rawData: ContactPayload = {
+    name: (formData.get('name') || '').toString(),
+    email: (formData.get('email') || '').toString(),
+    category: (formData.get('category') || '').toString(),
+    subject: (formData.get('subject') || '').toString(),
+    message: (formData.get('message') || '').toString(),
   };
 
-  const validationResult = ContactFormSchema.safeParse(rawData);
-
-  if (!validationResult.success) {
-    const errorMessages = validationResult.error.errors
-      .map(e => `${e.path.join('.')}: ${e.message}`)
+  const validation = ContactFormSchema.safeParse(rawData);
+  if (!validation.success) {
+    const errorMsg = validation.error.errors
+      .map((e) => `${e.path.join('.')}: ${e.message}`)
       .join(', ');
-    console.error("❌ Contact Form Validation Error:", validationResult.error.flatten());
-    return { success: false, error: `Validation failed: ${errorMessages}` };
+    console.error('❌ Validation Error:', validation.error.flatten());
+    return { success: false, error: `Validation failed: ${errorMsg}` };
   }
 
-  const validatedData = validationResult.data;
+  const data = validation.data;
 
   try {
-    console.log(`⚙️ Initializing Firebase Admin for ${APP_NAME}...`);
     const app = await initializeFirebaseAdminApp(APP_NAME);
-    console.log(`✅ Firebase Admin for ${APP_NAME} initialized.`);
+    const db = getFirestore(app);
 
-    const db = getFirestore(app); // Get Firestore instance from initialized app
-    const contactRef = db.collection('contacts'); // Correct way to access collection
-
-    console.log(`📥 Saving contact form data to Firestore for ${APP_NAME}:`, validatedData);
-    await contactRef.add({
-      ...validatedData,
-      submittedAt: Firestore.FieldValue.serverTimestamp(), // Use FieldValue.serverTimestamp()
+    await db.collection('contacts').add({
+      ...data,
+      submittedAt: FieldValue.serverTimestamp(),
     });
 
-   try {
-      const reqHeaders = await headers(); // ✅ correct
+    // Send email with all form data
+    try {
+      const reqHeaders = headers(); // no await needed
       const host = reqHeaders.get('host');
       const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
       const baseUrl = `${protocol}://${host}`;
 
-      fetch(`${baseUrl}/api/send-email`, {
+      await fetch(`${baseUrl}/api/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validatedData),
-      }).catch((err) => {
-        console.error("📧 Email sending failed silently:", err);
+        body: JSON.stringify(data), // ✅ sends all form fields
       });
-      console.log("📧Mail Sent Successfully")
-    } catch (emailError) {
-      console.error("📧 Email logic crashed:", emailError);
+      console.log('📧 Email sent with form data');
+    } catch (emailErr) {
+      console.error('📧 Email dispatch error:', emailErr);
     }
 
-    console.log("✅ Contact form data saved to Firestore successfully.");
-    return { success: true, data: validatedData };
-  } catch (error: any) {
-    console.error(`🔥 Error in submitContactFormAction for ${APP_NAME}:`, error.message);
-    if (error.message.includes("Failed to initialize")) {
-      return { success: false, error: `Firebase initialization failed: ${error.message}` };
-    }
-    return { success: false, error: "Failed to process your message due to a server error. Please try again." };
+    return { success: true, data };
+  } catch (err: any) {
+    console.error('🔥 Submission Error:', err.message);
+    return {
+      success: false,
+      error:
+        'Server error occurred. Please try again later.',
+    };
   }
 }

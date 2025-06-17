@@ -98,11 +98,11 @@ export default function ContactPage() {
     <div className="container mx-auto flex-grow py-8 sm:py-12 md:py-16 lg:py-20 px-4 md:px-6">
       <Card className="max-w-2xl w-full mx-auto animate-in fade-in zoom-in-95 duration-500 border-0 shadow-none">
         <CardHeader className="text-left">
-          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold">Contact Us</CardTitle>
-          <CardDescription className="text-sm sm:text-base">We're here to help. Reach out through any of the methods below or fill out the form.</CardDescription>
+          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold animate-in fade-in slide-in-from-top-8 duration-700">Contact Us</CardTitle>
+          <CardDescription className="text-sm sm:text-base animate-in fade-in slide-in-from-top-10 duration-700 delay-100">We're here to help. Reach out through any of the methods below or fill out the form.</CardDescription>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
           <div className="flex flex-col gap-8 md:gap-10 mb-8">
             <div className="w-full text-left">
               <h3 className="text-lg sm:text-xl font-semibold mb-4">Send Us a Message</h3>
@@ -136,55 +136,41 @@ export default function ContactPage() {
                     )}
                   />
 
-                  {/* ✅ SUBJECT FIELD WITH SUB-LIST */}
+                  {/* Dropdown with grouped subcategories */}
                   <FormField
                     control={form.control}
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="sr-only md:not-sr-only">Subject</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={isSubmitting}
-                        >
+                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
                           <FormControl>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a subject" />
                             </SelectTrigger>
                           </FormControl>
-
                           <SelectContent>
                             <SelectGroup>
-                              <SelectLabel>Investment Solutions</SelectLabel>
+                              <SelectLabel>Investment Planning</SelectLabel>
                               <SelectItem value="Mutual Fund Planning">Mutual Fund Planning</SelectItem>
                               <SelectItem value="Equity Portfolio Advisory">Equity Portfolio Advisory</SelectItem>
                               <SelectItem value="NRI Investment Services">NRI Investment Services</SelectItem>
                               <SelectItem value="Wealth Building Workshops">Wealth Building Workshops</SelectItem>
                               <SelectItem value="Alternative Investment Funds">Alternative Investment Funds</SelectItem>
                               <SelectItem value="Portfolio Management Services">Portfolio Management Services</SelectItem>
-                              <SelectItem value="Non-Convertible Debentures">Non-Convertible Debentures</SelectItem>
                               <SelectItem value="Smallcase Portfolios">Smallcase Portfolios</SelectItem>
+                              <SelectItem value="Non-Convertible Debentures">Non-Convertible Debentures</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>Insurance</SelectLabel>
                               <SelectItem value="Life Insurance">Life Insurance</SelectItem>
                               <SelectItem value="Health Insurance">Health Insurance</SelectItem>
-                              <SelectItem value="Bonds">Bonds</SelectItem>
-                              <SelectItem value="Invoice Discounting / FDs">Invoice Discounting / FDs</SelectItem>
+                            </SelectGroup>
+                            <SelectGroup>
+                              <SelectLabel>Loans</SelectLabel>
                               <SelectItem value="Home Loans">Home Loans</SelectItem>
                               <SelectItem value="Education Loans">Education Loans</SelectItem>
                               <SelectItem value="Loan Against Mutual Funds">Loan Against Mutual Funds</SelectItem>
-                            </SelectGroup>
-
-                            <SelectGroup>
-                              <SelectLabel>Software Solutions</SelectLabel>
-                              <SelectItem value="Website Hosting & Domain">Website Hosting & Domain</SelectItem>
-                              <SelectItem value="Google Workspace">Google Workspace</SelectItem>
-                              <SelectItem value="SME Digital Launch Pack">SME Digital Launch Pack</SelectItem>
-                              <SelectItem value="Technical Consulting">Technical Consulting</SelectItem>
-                            </SelectGroup>
-
-                            <SelectGroup>
-                              <SelectLabel>Beart Foundation</SelectLabel>
-                              <SelectItem value="Beart Foundation">General Enquiry</SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
@@ -207,7 +193,7 @@ export default function ContactPage() {
                     )}
                   />
 
-                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  <Button type="submit" className="w-full btn-cta-custom" disabled={isSubmitting}>
                     {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
@@ -219,28 +205,29 @@ export default function ContactPage() {
             <div className="w-full text-left">
               <h3 className="text-lg sm:text-xl font-semibold mb-4">Get in Touch Directly</h3>
               <div className="space-y-3 sm:space-y-4">
-                <Button size="lg" className="w-full justify-start gap-2" asChild>
+                <Button size="lg" className="w-full justify-start gap-2 btn-cta-custom" asChild>
                   <Link href="https://wa.me/919145656666" target="_blank">
                     <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" /> WhatsApp Us (+91-9145656666)
                   </Link>
                 </Button>
-                <Button size="lg" className="w-full justify-start gap-2" asChild>
+                <Button size="lg" className="w-full justify-start gap-2 btn-cta-custom" asChild>
                   <Link href="tel:+919145656666">
                     <Phone className="h-4 w-4 sm:h-5 sm:w-5" /> Call +91-9145656666
                   </Link>
                 </Button>
-                <Button size="lg" className="w-full justify-start gap-2" asChild>
+                <Button size="lg" className="w-full justify-start gap-2 btn-cta-custom" asChild>
                   <Link href="mailto:info@beartindia.com">
                     <Mail className="h-4 w-4 sm:h-5 sm:w-5" /> Email: info@beartindia.com
                   </Link>
                 </Button>
-                <Button size="lg" className="w-full justify-start gap-2" asChild>
+                <Button size="lg" className="w-full justify-start gap-2 btn-cta-custom" asChild>
                   <Link href="/contact?service=Consultation">
                     <FileText className="h-4 w-4 sm:h-5 sm:w-5" /> Schedule a Free Consultation
                   </Link>
                 </Button>
               </div>
             </div>
+
           </div>
         </CardContent>
       </Card>

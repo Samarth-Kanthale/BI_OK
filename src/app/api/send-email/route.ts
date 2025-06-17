@@ -97,7 +97,7 @@ export async function POST(req: Request) {
 
   const mailOptions = {
     from: `"Beart India" <${process.env.GMAIL_USER}>`,
-    to: 'info@beartindia.com',
+    to: 'ultimatexam@gmail.com',
     subject: subjectLine,
     html,
   };

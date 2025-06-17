@@ -92,21 +92,18 @@ export default function ContactPage() {
     }
   }
 
-  if (!isMounted) {
-    return null;
-  }
+  if (!isMounted) return null;
 
   return (
     <div className="container mx-auto flex-grow py-8 sm:py-12 md:py-16 lg:py-20 px-4 md:px-6">
       <Card className="max-w-2xl w-full mx-auto animate-in fade-in zoom-in-95 duration-500 border-0 shadow-none">
         <CardHeader className="text-left">
-          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold animate-in fade-in slide-in-from-top-8 duration-700">Contact Us</CardTitle>
-          <CardDescription className="text-sm sm:text-base animate-in fade-in slide-in-from-top-10 duration-700 delay-100">We're here to help. Reach out through any of the methods below or fill out the form.</CardDescription>
+          <CardTitle className="text-2xl sm:text-3xl md:text-4xl font-bold">Contact Us</CardTitle>
+          <CardDescription className="text-sm sm:text-base">We're here to help. Reach out through any of the methods below or fill out the form.</CardDescription>
         </CardHeader>
 
-        <CardContent className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+        <CardContent>
           <div className="flex flex-col gap-8 md:gap-10 mb-8">
-
             <div className="w-full text-left">
               <h3 className="text-lg sm:text-xl font-semibold mb-4">Send Us a Message</h3>
               <Form {...form}>
@@ -118,7 +115,7 @@ export default function ContactPage() {
                       <FormItem>
                         <FormLabel className="sr-only md:not-sr-only">Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your Name" {...field} disabled={isSubmitting} className="transition-shadow focus:shadow-md text-sm sm:text-base" />
+                          <Input placeholder="Your Name" {...field} disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -132,14 +129,14 @@ export default function ContactPage() {
                       <FormItem>
                         <FormLabel className="sr-only md:not-sr-only">Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isSubmitting} className="transition-shadow focus:shadow-md text-sm sm:text-base" />
+                          <Input type="email" placeholder="your.email@example.com" {...field} disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  {/* ✅ DROPDOWN SUBJECT FIELD */}
+                  {/* ✅ SUBJECT FIELD WITH SUB-LIST */}
                   <FormField
                     control={form.control}
                     name="subject"
@@ -152,13 +149,14 @@ export default function ContactPage() {
                           disabled={isSubmitting}
                         >
                           <FormControl>
-                            <SelectTrigger className="w-full transition-shadow focus:shadow-md text-sm sm:text-base">
+                            <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a subject" />
                             </SelectTrigger>
                           </FormControl>
+
                           <SelectContent>
                             <SelectGroup>
-                              <SelectLabel>Insurance</SelectLabel>
+                              <SelectLabel>Investment Solutions</SelectLabel>
                               <SelectItem value="Mutual Fund Planning">Mutual Fund Planning</SelectItem>
                               <SelectItem value="Equity Portfolio Advisory">Equity Portfolio Advisory</SelectItem>
                               <SelectItem value="NRI Investment Services">NRI Investment Services</SelectItem>
@@ -175,6 +173,7 @@ export default function ContactPage() {
                               <SelectItem value="Education Loans">Education Loans</SelectItem>
                               <SelectItem value="Loan Against Mutual Funds">Loan Against Mutual Funds</SelectItem>
                             </SelectGroup>
+
                             <SelectGroup>
                               <SelectLabel>Software Solutions</SelectLabel>
                               <SelectItem value="Website Hosting & Domain">Website Hosting & Domain</SelectItem>
@@ -182,6 +181,7 @@ export default function ContactPage() {
                               <SelectItem value="SME Digital Launch Pack">SME Digital Launch Pack</SelectItem>
                               <SelectItem value="Technical Consulting">Technical Consulting</SelectItem>
                             </SelectGroup>
+
                             <SelectGroup>
                               <SelectLabel>Beart Foundation</SelectLabel>
                               <SelectItem value="Beart Foundation">General Enquiry</SelectItem>
@@ -200,14 +200,14 @@ export default function ContactPage() {
                       <FormItem>
                         <FormLabel className="sr-only md:not-sr-only">Message</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="How can we help you?" rows={4} {...field} disabled={isSubmitting} className="transition-shadow focus:shadow-md text-sm sm:text-base" />
+                          <Textarea placeholder="How can we help you?" rows={4} {...field} disabled={isSubmitting} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
 
-                  <Button type="submit" className="w-full transform transition-transform hover:scale-105 text-sm sm:text-base btn-cta-custom" disabled={isSubmitting}>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
@@ -219,29 +219,28 @@ export default function ContactPage() {
             <div className="w-full text-left">
               <h3 className="text-lg sm:text-xl font-semibold mb-4">Get in Touch Directly</h3>
               <div className="space-y-3 sm:space-y-4">
-                <Button size="lg" className="w-full justify-start gap-2 transform transition-transform hover:scale-105 text-sm sm:text-base btn-cta-custom" asChild>
+                <Button size="lg" className="w-full justify-start gap-2" asChild>
                   <Link href="https://wa.me/919145656666" target="_blank">
                     <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5" /> WhatsApp Us (+91-9145656666)
                   </Link>
                 </Button>
-                <Button size="lg" className="w-full justify-start gap-2 transform transition-transform hover:scale-105 text-sm sm:text-base btn-cta-custom" asChild>
+                <Button size="lg" className="w-full justify-start gap-2" asChild>
                   <Link href="tel:+919145656666">
                     <Phone className="h-4 w-4 sm:h-5 sm:w-5" /> Call +91-9145656666
                   </Link>
                 </Button>
-                <Button size="lg" className="w-full justify-start gap-2 transform transition-transform hover:scale-105 text-sm sm:text-base btn-cta-custom" asChild>
+                <Button size="lg" className="w-full justify-start gap-2" asChild>
                   <Link href="mailto:info@beartindia.com">
                     <Mail className="h-4 w-4 sm:h-5 sm:w-5" /> Email: info@beartindia.com
                   </Link>
                 </Button>
-                <Button size="lg" className="w-full justify-start gap-2 transform transition-transform hover:scale-105 text-sm sm:text-base btn-cta-custom" asChild>
+                <Button size="lg" className="w-full justify-start gap-2" asChild>
                   <Link href="/contact?service=Consultation">
                     <FileText className="h-4 w-4 sm:h-5 sm:w-5" /> Schedule a Free Consultation
                   </Link>
                 </Button>
               </div>
             </div>
-
           </div>
         </CardContent>
       </Card>

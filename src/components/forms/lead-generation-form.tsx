@@ -3,7 +3,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label"; // Replaced by FormLabel
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +14,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -30,24 +28,22 @@ interface LeadGenerationFormProps {
 const leadFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().min(1, "Email is required").email("Invalid email address"),
-  phone: z.string()
+  phone: z
+    .string()
     .optional()
-    .refine(val => {
-      if (val === undefined || val === null || val.trim() === "") return true; 
-      return /^[+]?\d{10,15}$/.test(val.trim()); 
+    .refine((val) => {
+      if (!val || val.trim() === "") return true;
+      return /^[+]?\d{10,15}$/.test(val.trim());
     }, {
-      message: "Invalid phone number format (10-15 digits, optionally starting with +)."
+      message: "Invalid phone number format (10–15 digits, optionally starting with +)."
     }),
   investmentAmount: z.string().optional(),
-  loanAmount: z.string()
-    .optional()
-    .transform(val => (val === undefined || val === null || val.trim() === "" ? undefined : val.trim()))
-    .refine(val => {
-      if (val === undefined) return true; 
-      const num = Number(val);
-      return !isNaN(num) && num > 0;
-    }, {
-      message: "Loan amount must be a positive number if provided."
+  loanAmount: z
+    .string()
+    .nullable()
+    .transform((val) => val ?? '')
+    .refine((val) => val === '' || (!isNaN(Number(val)) && Number(val) > 0), {
+      message: "Loan amount must be a positive number if provided.",
     }),
   message: z.string().min(5, "Message must be at least 5 characters long"),
 });
@@ -65,26 +61,35 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
       email: "",
       phone: "",
       investmentAmount: "",
-      loanAmount: "",
+      loanAmount: "", // ensure it's a string by default
       message: "",
     },
   });
 
   async function onSubmit(values: LeadFormValues) {
     setIsSubmitting(true);
+
     const formData = new FormData();
 
     formData.append('name', values.name);
     formData.append('email', values.email);
-    if (values.phone && values.phone.trim() !== "") formData.append('phone', values.phone.trim());
+    if (values.phone && values.phone.trim() !== "") {
+      formData.append('phone', values.phone.trim());
+    }
 
-    if (values.investmentAmount && values.investmentAmount !== "Not Applicable" && values.investmentAmount !== "") {
-        formData.append('investmentAmount', values.investmentAmount);
+    if (
+      values.investmentAmount &&
+      values.investmentAmount !== "Not Applicable" &&
+      values.investmentAmount !== ""
+    ) {
+      formData.append('investmentAmount', values.investmentAmount);
     }
-    
-    if (values.loanAmount && values.loanAmount.trim() !== "") {
-         formData.append('loanAmount', values.loanAmount.trim());
+
+    const loanAmount = values.loanAmount ?? '';
+    if (loanAmount.trim() !== "") {
+      formData.append('loanAmount', loanAmount.trim());
     }
+
     formData.append('message', values.message);
     formData.append('serviceTitle', serviceTitle);
 
@@ -99,15 +104,15 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
         });
         form.reset();
       } else {
-         toast({
+        toast({
           title: "Submission Failed",
           description: result.error || "An error occurred. Please try again.",
           variant: "destructive",
         });
       }
     } catch (error) {
-       console.error("Form submission error:", error);
-       toast({
+      console.error("Form submission error:", error);
+      toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again later.",
         variant: "destructive",
@@ -131,9 +136,9 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm sm:text-base">Name</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Name" {...field} disabled={isSubmitting} className="text-sm sm:text-base"/>
+                    <Input placeholder="Your Name" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -144,9 +149,9 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm sm:text-base">Email</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="your.email@example.com" {...field} disabled={isSubmitting} className="text-sm sm:text-base"/>
+                    <Input type="email" placeholder="your.email@example.com" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -157,9 +162,9 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm sm:text-base">Phone (Optional)</FormLabel>
+                  <FormLabel>Phone (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="tel" placeholder="+91-XXXXXXXXXX" {...field} disabled={isSubmitting} className="text-sm sm:text-base"/>
+                    <Input type="tel" placeholder="+91-XXXXXXXXXX" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -172,20 +177,20 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
                 name="investmentAmount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm sm:text-base">Estimated Investment Amount (Optional)</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isSubmitting}>
+                    <FormLabel>Estimated Investment Amount (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value} disabled={isSubmitting}>
                       <FormControl>
-                        <SelectTrigger className="text-sm sm:text-base">
+                        <SelectTrigger>
                           <SelectValue placeholder="Select amount" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="< 5L">&lt; 5 Lakhs</SelectItem>
-                        <SelectItem value="5L-25L">5 - 25 Lakhs</SelectItem>
-                        <SelectItem value="25L-50L">25 - 50 Lakhs</SelectItem>
-                        <SelectItem value="50L-1Cr">50 Lakhs - 1 Crore</SelectItem>
-                        <SelectItem value="> 1Cr">&gt; 1 Crore</SelectItem>
-                        <SelectItem value="Not Applicable">Not Applicable / Undecided</SelectItem>
+                        <SelectItem value="0-10K">0 - 10 Thousands</SelectItem>
+                        <SelectItem value="10K-25K">10 Thousands - 25 Thousands</SelectItem>
+                        <SelectItem value="25K-50K">25 Thousands - 50 Thousands</SelectItem>
+                        <SelectItem value="50K-1L">50 Thousands - 1 Lakhs</SelectItem>
+                        <SelectItem value=">1L">&gt; 1 Lakhs</SelectItem>
+                        <SelectItem value="NA">Not Applicable / Undecided</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -200,19 +205,18 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
                 name="loanAmount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm sm:text-base">Estimated Loan Amount (Optional)</FormLabel>
+                    <FormLabel>Estimated Loan Amount (Optional)</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="text" 
+                      <Input
+                        type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
-                        placeholder="e.g., 500000" 
+                        placeholder="e.g., 500000"
                         {...field}
-                        onChange={event => field.onChange(event.target.value)} 
-                        value={field.value || ''} // Ensure value is not null/undefined
-                        disabled={isSubmitting} 
-                        className="text-sm sm:text-base"
-                        />
+                        onChange={(e) => field.onChange(e.target.value)}
+                        value={field.value || ""}
+                        disabled={isSubmitting}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -225,15 +229,20 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
               name="message"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm sm:text-base">Your Message/Query</FormLabel>
+                  <FormLabel>Your Message/Query</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={`Tell us more about your requirements for ${serviceTitle}...`} rows={4} {...field} disabled={isSubmitting} className="text-sm sm:text-base"/>
+                    <Textarea
+                      placeholder={`Tell us more about your requirements for ${serviceTitle}...`}
+                      rows={4}
+                      {...field}
+                      disabled={isSubmitting}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="btn-cta-custom w-full text-sm sm:text-base" disabled={isSubmitting}>
+            <Button type="submit" className="btn-cta-custom w-full" disabled={isSubmitting}>
               {isSubmitting ? "Submitting..." : "Submit Inquiry"}
             </Button>
           </form>
@@ -242,5 +251,3 @@ export function LeadGenerationForm({ serviceTitle, className }: LeadGenerationFo
     </Card>
   );
 }
-
-

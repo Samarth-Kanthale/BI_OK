@@ -72,7 +72,7 @@ export async function submitContactFormAction(
       await fetch(`${baseUrl}/api/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data), // ✅ sends all form fields
+        body: JSON.stringify({ formType: 'contact', ...data }),
       });
       console.log('📧 Email sent with form data');
     } catch (emailErr) {
